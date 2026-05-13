@@ -6,7 +6,6 @@ A Flutter-based personal task manager mobile application built as part of the Mo
 - **Name:** Awongu Agabi Therese-Claire
 - **Student ID:** LMUI250709
 - **Programme:** Software Engineering
-- **Lecturer:** Atumkeze
 
 ---
 
