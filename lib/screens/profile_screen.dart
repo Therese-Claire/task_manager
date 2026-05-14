@@ -9,7 +9,7 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ── Header with gradient background ──
+            // Header with gradient background
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -43,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                       radius: 55,
                       backgroundColor: Color(0xFF80CBC4),
                       child: Text(
-                        'AC', // ← YOUR INITIALS
+                        'AC',
                         style: TextStyle(
                           fontSize: 40,
                           color: Colors.white,
@@ -55,7 +55,7 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   // Name
                   const Text(
-                    'Awongu Agabi Therese-Claire', // ← YOUR NAME
+                    'Awongu Agabi Therese-Claire',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // ── About Me card ──
+            // About Me card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -163,7 +163,7 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // ── Goals card ──
+            // Goals card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -205,7 +205,7 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // ← YOUR 3 GOALS
+                  
                     _goalTile(
                       '1',
                       'Get a good GPA',
@@ -236,7 +236,6 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // ── Course info card ──
 
 
             const SizedBox(height: 30),
