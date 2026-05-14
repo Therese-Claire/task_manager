@@ -10,43 +10,27 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  // Master list of all tasks
   final List<Task> _tasks = [];
-
-  // Bottom nav index — 0 = Tasks, 1 = Profile
   int _currentIndex = 0;
-
-  // Filter state — All, Pending, Completed
   String _filter = 'All';
-
-  // Search state
   String _searchQuery = '';
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-
-  // Sort state
   String _sortBy = 'Due Date';
 
-  // Returns filtered + sorted list of tasks
   List<Task> get _filteredTasks {
     List<Task> result = _tasks.where((task) {
-      // Check filter match
       final matchesFilter = _filter == 'All' ||
           (_filter == 'Completed' && task.isCompleted) ||
           (_filter == 'Pending' && !task.isCompleted);
-      // Check search match
       final matchesSearch = task.title
           .toLowerCase()
           .contains(_searchQuery.toLowerCase());
       return matchesFilter && matchesSearch;
     }).toList();
 
-    // Sort the result
     result.sort((a, b) {
-      if (_sortBy == 'Due Date') {
-        return a.dueDate.compareTo(b.dueDate);
-      }
-      // Priority sort: High=0, Medium=1, Low=2
+      if (_sortBy == 'Due Date') return a.dueDate.compareTo(b.dueDate);
       const order = {'High': 0, 'Medium': 1, 'Low': 2};
       return (order[a.priority] ?? 1).compareTo(order[b.priority] ?? 1);
     });
@@ -54,7 +38,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return result;
   }
 
-  // Opens bottom sheet for adding or editing a task
   void _openTaskForm({Task? existingTask}) {
     final titleController =
     TextEditingController(text: existingTask?.title ?? '');
@@ -68,152 +51,194 @@ class _TaskListScreenState extends State<TaskListScreen> {
       context: context,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: SizedBox(
             width: 500,
             child: StatefulBuilder(
               builder: (ctx, setModalState) {
-                return Padding(
+                return SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          existingTask == null ? 'Add Task' : 'Edit Task',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          controller: titleController,
-                          decoration: const InputDecoration(
-                            labelText: 'Title',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: descController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLines: 2,
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          value: category,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ['School', 'Personal', 'Health', 'Work']
-                              .map((c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(c),
-                          ))
-                              .toList(),
-                          onChanged: (val) =>
-                              setModalState(() => category = val!),
-                        ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
-                          value: priority,
-                          decoration: const InputDecoration(
-                            labelText: 'Priority',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: ['Low', 'Medium', 'High']
-                              .map((p) => DropdownMenuItem(
-                            value: p,
-                            child: Text(p),
-                          ))
-                              .toList(),
-                          onChanged: (val) =>
-                              setModalState(() => priority = val!),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Due: ${dueDate.day}/${dueDate.month}/${dueDate.year}',
-                                style: const TextStyle(fontSize: 15),
-                              ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Dialog header
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00796B).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            TextButton.icon(
-                              onPressed: () async {
-                                final picked = await showDatePicker(
-                                  context: ctx,
-                                  initialDate: dueDate,
-                                  firstDate: DateTime(2024),
-                                  lastDate: DateTime(2030),
-                                );
-                                if (picked != null) {
-                                  setModalState(() => dueDate = picked);
-                                }
-                              },
-                              icon: const Icon(Icons.calendar_today),
-                              label: const Text('Pick Date'),
-                            ),
-                          ],
+                            child: const Icon(Icons.add_task,
+                                color: Color(0xFF00796B)),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            existingTask == null ? 'Add New Task' : 'Edit Task',
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // Title
+                      TextField(
+                        controller: titleController,
+                        decoration: InputDecoration(
+                          labelText: 'Title',
+                          prefixIcon: const Icon(Icons.title),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (titleController.text.trim().isEmpty ||
-                                  descController.text.trim().isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Please fill in all fields'),
+                      ),
+                      const SizedBox(height: 12),
+                      // Description
+                      TextField(
+                        controller: descController,
+                        decoration: InputDecoration(
+                          labelText: 'Description',
+                          prefixIcon: const Icon(Icons.description),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 12),
+                      // Category
+                      DropdownButtonFormField<String>(
+                        value: category,
+                        decoration: InputDecoration(
+                          labelText: 'Category',
+                          prefixIcon: const Icon(Icons.category),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        items: ['School', 'Personal', 'Health', 'Work']
+                            .map((c) =>
+                            DropdownMenuItem(value: c, child: Text(c)))
+                            .toList(),
+                        onChanged: (val) =>
+                            setModalState(() => category = val!),
+                      ),
+                      const SizedBox(height: 12),
+                      // Priority
+                      DropdownButtonFormField<String>(
+                        value: priority,
+                        decoration: InputDecoration(
+                          labelText: 'Priority',
+                          prefixIcon: const Icon(Icons.flag),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        items: ['Low', 'Medium', 'High']
+                            .map((p) =>
+                            DropdownMenuItem(value: p, child: Text(p)))
+                            .toList(),
+                        onChanged: (val) =>
+                            setModalState(() => priority = val!),
+                      ),
+                      const SizedBox(height: 12),
+                      // Date picker
+                      GestureDetector(
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: ctx,
+                            initialDate: dueDate,
+                            firstDate: DateTime(2024),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setModalState(() => dueDate = picked);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey[400]!),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  color: Color(0xFF00796B), size: 20),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Due Date',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600])),
+                                  Text(
+                                    '${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500),
                                   ),
-                                );
-                                return;
-                              }
-                              setState(() {
-                                if (existingTask == null) {
-                                  _tasks.add(Task(
-                                    title: titleController.text.trim(),
-                                    description: descController.text.trim(),
-                                    category: category,
-                                    priority: priority,
-                                    dueDate: dueDate,
-                                  ));
-                                } else {
-                                  existingTask.title =
-                                      titleController.text.trim();
-                                  existingTask.description =
-                                      descController.text.trim();
-                                  existingTask.category = category;
-                                  existingTask.priority = priority;
-                                  existingTask.dueDate = dueDate;
-                                }
-                              });
-                              Navigator.pop(ctx);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
-                              foregroundColor: Colors.white,
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 14),
-                            ),
-                            child: Text(
-                              existingTask == null
-                                  ? 'Add Task'
-                                  : 'Save Changes',
-                            ),
+                                ],
+                              ),
+                              const Spacer(),
+                              Icon(Icons.chevron_right,
+                                  color: Colors.grey[400]),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 20),
+                      // Submit button
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (titleController.text.trim().isEmpty ||
+                                descController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                    Text('Please fill in all fields')),
+                              );
+                              return;
+                            }
+                            setState(() {
+                              if (existingTask == null) {
+                                _tasks.add(Task(
+                                  title: titleController.text.trim(),
+                                  description: descController.text.trim(),
+                                  category: category,
+                                  priority: priority,
+                                  dueDate: dueDate,
+                                ));
+                              } else {
+                                existingTask.title =
+                                    titleController.text.trim();
+                                existingTask.description =
+                                    descController.text.trim();
+                                existingTask.category = category;
+                                existingTask.priority = priority;
+                                existingTask.dueDate = dueDate;
+                              }
+                            });
+                            Navigator.pop(ctx);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF00796B),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                          ),
+                          child: Text(
+                            existingTask == null ? 'Add Task' : 'Save Changes',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -226,70 +251,117 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Statistics for the stats bar
-    final int completed =
-        _tasks.where((t) => t.isCompleted).length;
+    final int completed = _tasks.where((t) => t.isCompleted).length;
     final int total = _tasks.length;
     final double progress = total == 0 ? 0.0 : completed / total;
 
-    // The two pages for bottom navigation
     final List<Widget> pages = [
-      // ── PAGE 0: Tasks ──
+      // ── Tasks Page ──
       Column(
         children: [
-          // Statistics bar
-          if (_tasks.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _statChip('Total', total, Colors.teal),
-                      _statChip('Done', completed, Colors.green),
-                      _statChip(
-                          'Pending', total - completed, Colors.orange),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Linear progress indicator
-                  LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    color: Colors.teal,
-                    minHeight: 8,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${(progress * 100).toStringAsFixed(0)}% complete',
-                    style: const TextStyle(
-                        fontSize: 12, color: Colors.grey),
-                  ),
-                ],
+          // Stats banner
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF00796B), Color(0xFF004D40)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
             ),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: _tasks.isEmpty
+                ? const Column(
+              children: [
+                Text('Welcome to MembaMe!',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                SizedBox(height: 4),
+                Text('Tap + to add your first task',
+                    style: TextStyle(
+                        color: Colors.white70, fontSize: 13)),
+              ],
+            )
+                : Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _statChip('Total', total, Colors.white,
+                        Colors.white24),
+                    _statChip('Done', completed, Colors.greenAccent,
+                        Colors.white24),
+                    _statChip('Pending', total - completed,
+                        Colors.orangeAccent, Colors.white24),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.white24,
+                    color: Colors.greenAccent,
+                    minHeight: 10,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}% of tasks completed',
+                  style: const TextStyle(
+                      fontSize: 12, color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
 
-          // Filter buttons
+          // Filter chips
           Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
             child: Row(
               children: ['All', 'Pending', 'Completed'].map((f) {
+                final isSelected = _filter == f;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(f),
-                    selected: _filter == f,
-                    selectedColor: Colors.teal,
-                    labelStyle: TextStyle(
-                      color: _filter == f
-                          ? Colors.white
-                          : Colors.black,
+                  padding: const EdgeInsets.only(right: 10),
+                  child: GestureDetector(
+                    onTap: () => setState(() => _filter = f),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF00796B)
+                            : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: isSelected
+                            ? [
+                          BoxShadow(
+                            color: const Color(0xFF00796B)
+                                .withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          )
+                        ]
+                            : [],
+                      ),
+                      child: Text(
+                        f,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.grey[600],
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          fontSize: 13,
+                        ),
+                      ),
                     ),
-                    onSelected: (_) =>
-                        setState(() => _filter = f),
                   ),
                 );
               }).toList(),
@@ -303,25 +375,30 @@ class _TaskListScreenState extends State<TaskListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.checklist,
-                    size: 80,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tasks here!',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 18,
+                  Container(
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00796B).withOpacity(0.08),
+                      shape: BoxShape.circle,
                     ),
+                    child: const Icon(Icons.checklist_rounded,
+                        size: 70, color: Color(0xFF00796B)),
                   ),
+                  const SizedBox(height: 24),
+                  const Text('No tasks here!',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF004D40))),
                   const SizedBox(height: 8),
-                  const Text('Tap + to add a new task'),
+                  Text('Tap the + button to add your first task',
+                      style: TextStyle(
+                          fontSize: 14, color: Colors.grey[500])),
                 ],
               ),
             )
                 : ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 80),
               itemCount: _filteredTasks.length,
               itemBuilder: (_, i) {
                 final task = _filteredTasks[i];
@@ -331,8 +408,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       setState(() => _tasks.remove(task)),
                   onToggleComplete: () => setState(
                           () => task.isCompleted = !task.isCompleted),
-                  onEdit: () =>
-                      _openTaskForm(existingTask: task),
+                  onEdit: () => _openTaskForm(existingTask: task),
                 );
               },
             ),
@@ -340,15 +416,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
         ],
       ),
 
-      // ── PAGE 1: Profile ──
+      // ── Profile Page ──
       const ProfileScreen(),
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFF00796B),
         foregroundColor: Colors.white,
-        // Search mode changes the title to a text field
+        elevation: 0,
         title: _isSearching
             ? TextField(
           controller: _searchController,
@@ -359,12 +436,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
             hintStyle: TextStyle(color: Colors.white70),
             border: InputBorder.none,
           ),
-          onChanged: (val) =>
-              setState(() => _searchQuery = val),
+          onChanged: (val) => setState(() => _searchQuery = val),
         )
-            : const Text('MemberMe'),
+            : Text(
+          _currentIndex == 0 ? 'MembaMe' : 'My Profile',
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 20),
+        ),
         actions: [
-          // Search toggle
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () => setState(() {
@@ -375,107 +454,107 @@ class _TaskListScreenState extends State<TaskListScreen> {
               }
             }),
           ),
-
-          // Sort menu
           PopupMenuButton<String>(
             icon: const Icon(Icons.sort),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14)),
             onSelected: (val) => setState(() => _sortBy = val),
             itemBuilder: (_) => [
               const PopupMenuItem(
-                value: 'Due Date',
-                child: Text('Sort by Due Date'),
-              ),
+                  value: 'Due Date', child: Text('Sort by Due Date')),
               const PopupMenuItem(
-                value: 'Priority',
-                child: Text('Sort by Priority'),
-              ),
+                  value: 'Priority', child: Text('Sort by Priority')),
             ],
           ),
-
-          // Clear all — Section 4, Task 4.2
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (_) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
                   title: const Text('Clear All Tasks'),
                   content: const Text(
-                    'This will delete every task. Are you sure?',
-                  ),
+                      'This will delete every task. Are you sure?'),
                   actions: [
                     TextButton(
-                      onPressed: () =>
-                          Navigator.pop(context, false),
+                      onPressed: () => Navigator.pop(context, false),
                       child: const Text('Cancel'),
                     ),
                     TextButton(
-                      onPressed: () =>
-                          Navigator.pop(context, true),
-                      child: const Text(
-                        'Clear All',
-                        style: TextStyle(color: Colors.red),
-                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Clear All',
+                          style: TextStyle(color: Colors.red)),
                     ),
                   ],
                 ),
               );
-              if (confirm == true) {
-                setState(() => _tasks.clear());
-              }
+              if (confirm == true) setState(() => _tasks.clear());
             },
           ),
         ],
       ),
-
-      // IndexedStack keeps both pages alive when switching tabs
       body: IndexedStack(index: _currentIndex, children: pages),
-
-      // FAB only shows on Tasks tab
       floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
         onPressed: () => _openTaskForm(),
-        backgroundColor: Colors.teal,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('Add Task',
+            style: TextStyle(fontWeight: FontWeight.bold)),
       )
           : null,
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.teal,
-        onTap: (i) => setState(() => _currentIndex = i),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.checklist),
-            label: 'Tasks',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, -3),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          selectedItemColor: const Color(0xFF00796B),
+          unselectedItemColor: Colors.grey,
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          onTap: (i) => setState(() => _currentIndex = i),
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.checklist_rounded), label: 'Tasks'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
 
-  // Helper widget for the statistics bar
-  Widget _statChip(String label, int count, Color color) {
-    return Column(
-      children: [
-        Text(
-          '$count',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ],
+  Widget _statChip(
+      String label, int count, Color textColor, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Text('$count',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: textColor)),
+          const SizedBox(height: 2),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 12, color: textColor.withOpacity(0.8))),
+        ],
+      ),
     );
   }
 }

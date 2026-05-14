@@ -11,13 +11,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MemberMe',
-      debugShowCheckedModeBanner: false, // removes the debug ribbon top-right
+      title: 'MembaMe',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00796B)),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
-      home: const TaskListScreen(), // home screen is the task list
+      home: const TaskListScreen(),
     );
   }
 }

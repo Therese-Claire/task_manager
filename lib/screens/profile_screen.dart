@@ -6,116 +6,286 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        backgroundColor: Colors.white,
-        // foregroundColor: Colors.teal,
-        automaticallyImplyLeading: false,
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
+            // ── Header with gradient background ──
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF00796B), Color(0xFF004D40)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
+                ),
+              ),
+              padding: const EdgeInsets.only(top: 60, bottom: 40),
+              child: Column(
+                children: [
+                  // Avatar with border
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: const CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Color(0xFF80CBC4),
+                      child: Text(
+                        'AC', // ← YOUR INITIALS
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Name
+                  const Text(
+                    'Awongu Agabi Therese-Claire', // ← YOUR NAME
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Programme badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Software Engineering',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Student ID badge
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.badge,
+                          color: Colors.white70, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Student ID: LMUI250709',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
 
-            // CircleAvatar showing my initials
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.teal,
-              child: Text(
-                'AC',
-                style: TextStyle(
-                  fontSize: 36,
+            const SizedBox(height: 24),
+
+            // ── About Me card ──
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.12),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00796B).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.person,
+                              color: Color(0xFF00796B), size: 20),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'About Me',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      // ← YOUR BIO
+                      'I am a creative tech enthusiast, entrepreneur, and digital marketer '
+                          'passionate about innovation, branding and problem-solving. As the '
+                          'co-founder and Head of Marketing & Social Media at Pikup, I enjoy '
+                          'building impactful solutions and connecting people through creative strategies.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            const Text(
-              'Awongu Agabi Therese-Claire',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'Student ID: LMUI250709',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-
-            const SizedBox(height: 4),
-
-            Text(
-              'Software Engineering',
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-
-            const SizedBox(height: 24),
-            const Divider(),
             const SizedBox(height: 16),
 
-            // Bio section
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'About Me',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // ── Goals card ──
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.12),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00796B).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.flag,
+                              color: Color(0xFF00796B), size: 20),
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'My Goals This Semester',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // ← YOUR 3 GOALS
+                    _goalTile(
+                      '1',
+                      'Get a good GPA',
+                      'Stay consistent and submit all assignments on time.',
+                      Icons.school,
+                      const Color(0xFF00796B),
+                    ),
+                    const SizedBox(height: 12),
+                    _goalTile(
+                      '2',
+                      'Build Flutter Projects',
+                      'Build at least two personal Flutter projects this semester.',
+                      Icons.phone_android,
+                      Colors.orange,
+                    ),
+                    const SizedBox(height: 12),
+                    _goalTile(
+                      '3',
+                      'Enhance Machine Learning Skills',
+                      'Complete an online ML course and apply it to a real project.',
+                      Icons.psychology,
+                      Colors.purple,
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // ← CHANGE TO YOUR REAL 2-3 SENTENCE BIO
-            const Text(
-              'I am a creative tech enthusiast, entrepreneur, and digital marketer passionate about innovation, branding '
-                  'and problem-solving. As the co-founder and Head of Marketing & Social Media at Pikup,'
-                  'I enjoy building impactful solutions and connecting with people through creative strategies.',
-              style: TextStyle(fontSize: 15, height: 1.5),
             ),
 
             const SizedBox(height: 24),
 
-            // Goals section
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'My Goals This Semester',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
+            // ── Course info card ──
 
-            const SizedBox(height: 12),
 
-            _goalTile('1. Get a good GPA'),
-            _goalTile('2. Build at least two personal Flutter projects'),
-            _goalTile('3. Enhance my machine learning skills'),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  // Helper method that builds one goal row
-  Widget _goalTile(String goal) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.check_circle, color: Colors.teal, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(goal, style: const TextStyle(fontSize: 15)),
+  // Goal tile widget
+  Widget _goalTile(String number, String title, String subtitle,
+      IconData icon, Color color) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
-      ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

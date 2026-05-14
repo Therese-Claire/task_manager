@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/task_detail_screen.dart';
 
-
+// ── Task Model ──
 class Task {
   String title;
   String description;
@@ -20,7 +20,6 @@ class Task {
   });
 }
 
-// Returns a color based on priority level
 Color priorityColor(String priority) {
   switch (priority) {
     case 'High':
@@ -32,7 +31,6 @@ Color priorityColor(String priority) {
   }
 }
 
-// Returns an icon based on category
 IconData categoryIcon(String category) {
   switch (category) {
     case 'School':
@@ -46,7 +44,7 @@ IconData categoryIcon(String category) {
   }
 }
 
-// TaskCard Widget
+// ── TaskCard Widget ──
 class TaskCard extends StatelessWidget {
   final Task task;
   final VoidCallback onDelete;
@@ -63,73 +61,175 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if task is overdue — past due date and not completed
     final bool isOverdue =
         !task.isCompleted && task.dueDate.isBefore(DateTime.now());
 
     return Dismissible(
-      // Swipe left to delete — Section 2, Task 2.2
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
       onDismissed: (_) => onDelete(),
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.only(right: 24),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(16),
         ),
-        // Overdue tasks highlighted in red
-        color: isOverdue ? Colors.red[50] : null,
-        child: ListTile(
-          leading: Icon(categoryIcon(task.category), color: Colors.teal),
-          title: Text(
-            task.title,
-            style: TextStyle(
-              // Strikethrough for completed tasks — Section 2, Task 2.2
-              decoration:
-              task.isCompleted ? TextDecoration.lineThrough : null,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            '${task.category} • Due: ${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}',
-            style: TextStyle(color: isOverdue ? Colors.red : null),
-          ),
-          trailing: Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: priorityColor(task.priority).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              task.priority,
-              style: TextStyle(
-                color: priorityColor(task.priority),
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.delete, color: Colors.white, size: 28),
+            SizedBox(height: 4),
+            Text('Delete',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TaskDetailScreen(
+                task: task,
+                onDelete: onDelete,
+                onToggleComplete: onToggleComplete,
+                onEdit: onEdit,
               ),
             ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: isOverdue ? const Color(0xFFFFF3F3) : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isOverdue
+                  ? Colors.red.withOpacity(0.3)
+                  : Colors.grey.withOpacity(0.1),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          // Tap to navigate to Task Detail Screen
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => TaskDetailScreen(
-                  task: task,
-                  onDelete: onDelete,
-                  onToggleComplete: onToggleComplete,
-                  onEdit: onEdit,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                // Category icon circle
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00796B).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(categoryIcon(task.category),
+                      color: const Color(0xFF00796B), size: 22),
                 ),
-              ),
-            );
-          },
+                const SizedBox(width: 12),
+                // Title and subtitle
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          decoration: task.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
+                          color: task.isCompleted
+                              ? Colors.grey
+                              : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 12,
+                              color:
+                              isOverdue ? Colors.red : Colors.grey[500]),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                              isOverdue ? Colors.red : Colors.grey[500],
+                            ),
+                          ),
+                          if (isOverdue) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'Overdue',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 10),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Priority badge
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: priorityColor(task.priority).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        task.priority,
+                        style: TextStyle(
+                          color: priorityColor(task.priority),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Completion status dot
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: task.isCompleted
+                            ? Colors.green
+                            : Colors.grey[300],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
