@@ -47,207 +47,230 @@ class _TaskListScreenState extends State<TaskListScreen> {
     String priority = existingTask?.priority ?? 'Medium';
     DateTime dueDate = existingTask?.dueDate ?? DateTime.now();
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return Dialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          child: SizedBox(
-            width: 500,
-            child: StatefulBuilder(
-              builder: (ctx, setModalState) {
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Dialog header
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00796B).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.add_task,
-                                color: Color(0xFF00796B)),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            existingTask == null ? 'Add New Task' : 'Edit Task',
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // Title
-                      TextField(
-                        controller: titleController,
-                        decoration: InputDecoration(
-                          labelText: 'Title',
-                          prefixIcon: const Icon(Icons.title),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(28),
+                  topRight: Radius.circular(28),
+                ),
+              ),
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Handle bar
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      // Description
-                      TextField(
-                        controller: descController,
-                        decoration: InputDecoration(
-                          labelText: 'Description',
-                          prefixIcon: const Icon(Icons.description),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 12),
-                      // Category
-                      DropdownButtonFormField<String>(
-                        value: category,
-                        decoration: InputDecoration(
-                          labelText: 'Category',
-                          prefixIcon: const Icon(Icons.category),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        items: ['School', 'Personal', 'Health', 'Work']
-                            .map((c) =>
-                            DropdownMenuItem(value: c, child: Text(c)))
-                            .toList(),
-                        onChanged: (val) =>
-                            setModalState(() => category = val!),
-                      ),
-                      const SizedBox(height: 12),
-                      // Priority
-                      DropdownButtonFormField<String>(
-                        value: priority,
-                        decoration: InputDecoration(
-                          labelText: 'Priority',
-                          prefixIcon: const Icon(Icons.flag),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        items: ['Low', 'Medium', 'High']
-                            .map((p) =>
-                            DropdownMenuItem(value: p, child: Text(p)))
-                            .toList(),
-                        onChanged: (val) =>
-                            setModalState(() => priority = val!),
-                      ),
-                      const SizedBox(height: 12),
-                      // Date picker
-                      GestureDetector(
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: ctx,
-                            initialDate: dueDate,
-                            firstDate: DateTime(2024),
-                            lastDate: DateTime(2030),
-                          );
-                          if (picked != null) {
-                            setModalState(() => dueDate = picked);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
+                    ),
+                    const SizedBox(height: 20),
+                    // Header
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[400]!),
-                            borderRadius: BorderRadius.circular(12),
+                            color: const Color(0xFF00796B).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.calendar_today,
-                                  color: Color(0xFF00796B), size: 20),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Due Date',
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[600])),
-                                  Text(
-                                    '${dueDate.day}/${dueDate.month}/${dueDate.year}',
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              Icon(Icons.chevron_right,
-                                  color: Colors.grey[400]),
-                            ],
-                          ),
+                          child: const Icon(Icons.add_task,
+                              color: Color(0xFF00796B)),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          existingTask == null ? 'Add New Task' : 'Edit Task',
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    // Title
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        prefixIcon: const Icon(Icons.title),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Description
+                    TextField(
+                      controller: descController,
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        prefixIcon: const Icon(Icons.description),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 12),
+                    // Category dropdown
+                    DropdownButtonFormField<String>(
+                      value: category,
+                      decoration: InputDecoration(
+                        labelText: 'Category',
+                        prefixIcon: const Icon(Icons.category),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      items: ['School', 'Personal', 'Health', 'Work']
+                          .map((c) =>
+                          DropdownMenuItem(value: c, child: Text(c)))
+                          .toList(),
+                      onChanged: (val) =>
+                          setModalState(() => category = val!),
+                    ),
+                    const SizedBox(height: 12),
+                    // Priority dropdown
+                    DropdownButtonFormField<String>(
+                      value: priority,
+                      decoration: InputDecoration(
+                        labelText: 'Priority',
+                        prefixIcon: const Icon(Icons.flag),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      items: ['Low', 'Medium', 'High']
+                          .map((p) =>
+                          DropdownMenuItem(value: p, child: Text(p)))
+                          .toList(),
+                      onChanged: (val) =>
+                          setModalState(() => priority = val!),
+                    ),
+                    const SizedBox(height: 12),
+                    // Date picker
+                    GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: ctx,
+                          initialDate: dueDate,
+                          firstDate: DateTime(2024),
+                          lastDate: DateTime(2030),
+                        );
+                        if (picked != null) {
+                          setModalState(() => dueDate = picked);
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[400]!),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: Color(0xFF00796B), size: 20),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Due Date',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600])),
+                                Text(
+                                  '${dueDate.day}/${dueDate.month}/${dueDate.year}',
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Icon(Icons.chevron_right,
+                                color: Colors.grey[400]),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      // Submit button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (titleController.text.trim().isEmpty ||
-                                descController.text.trim().isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                    Text('Please fill in all fields')),
-                              );
-                              return;
+                    ),
+                    const SizedBox(height: 20),
+                    // Submit button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (titleController.text.trim().isEmpty ||
+                              descController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content:
+                                  Text('Please fill in all fields')),
+                            );
+                            return;
+                          }
+                          setState(() {
+                            if (existingTask == null) {
+                              _tasks.add(Task(
+                                title: titleController.text.trim(),
+                                description: descController.text.trim(),
+                                category: category,
+                                priority: priority,
+                                dueDate: dueDate,
+                              ));
+                            } else {
+                              existingTask.title =
+                                  titleController.text.trim();
+                              existingTask.description =
+                                  descController.text.trim();
+                              existingTask.category = category;
+                              existingTask.priority = priority;
+                              existingTask.dueDate = dueDate;
                             }
-                            setState(() {
-                              if (existingTask == null) {
-                                _tasks.add(Task(
-                                  title: titleController.text.trim(),
-                                  description: descController.text.trim(),
-                                  category: category,
-                                  priority: priority,
-                                  dueDate: dueDate,
-                                ));
-                              } else {
-                                existingTask.title =
-                                    titleController.text.trim();
-                                existingTask.description =
-                                    descController.text.trim();
-                                existingTask.category = category;
-                                existingTask.priority = priority;
-                                existingTask.dueDate = dueDate;
-                              }
-                            });
-                            Navigator.pop(ctx);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00796B),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
-                          ),
-                          child: Text(
-                            existingTask == null ? 'Add Task' : 'Save Changes',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                          });
+                          Navigator.pop(ctx);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00796B),
+                          foregroundColor: Colors.white,
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                        ),
+                        child: Text(
+                          existingTask == null
+                              ? 'Add Task'
+                              : 'Save Changes',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
-    );
-  }
+    );  }
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +279,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     final double progress = total == 0 ? 0.0 : completed / total;
 
     final List<Widget> pages = [
-      // ── Tasks Page ──
+      // Tasks Page
       Column(
         children: [
           // Stats banner
